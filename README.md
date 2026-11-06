@@ -8,9 +8,8 @@ The kit gives you tested building blocks, not a solution. Your tool server, agen
 reports are the case study.
 
 ## Setup (10 minutes)
-Copy this folder into your team repository as `cs3b/` (next to `cs2b/`), and run everything from inside it.
+Run everything from the repository root:
 ```
-cd cs3b
 python -m venv .venv && source .venv/bin/activate      # Python 3.10 or later
 pip install -r requirements.txt
 jupyter lab                                             # open notebooks/00_setup.ipynb
