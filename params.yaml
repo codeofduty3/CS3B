@@ -26,6 +26,11 @@ sec:
   user_agent: "Your Name your.email@northeastern.edu"   # SEC requires a real name and email
   base_url: "https://www.sec.gov/files/datastandardsinnovation/data/business-development-company-bdc-data-sets/"
   hosts: [www.sec.gov, data.sec.gov]
+models:                                    # Part 2: real models behind ReplayClient
+  cache_dir: evals/cassettes               # recorded responses; commit them so tests and CI replay for free
+  main:  {id: claude-sonnet-5-5, effort: medium, max_tokens: 16000, usd_per_mtok_in: 2.00, usd_per_mtok_out: 10.00}
+  small: {id: claude-haiku-5-5, effort: low, max_tokens: 2048, usd_per_mtok_in: 0.10, usd_per_mtok_out: 0.50}
+  routes: {agent: main, triage: small, materiality: small}
 prices:                                    # illustrative: replace with your provider's current prices
   usd_per_mtok_in: 0.40
   usd_per_mtok_out: 1.60

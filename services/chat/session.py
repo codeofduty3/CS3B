@@ -24,6 +24,7 @@ def load_world(root=ROOT):
     return {"P": P,
             "users": json.loads((FX / "users.json").read_text()),
             "mandates": json.loads((root / P["data"]["mandates"]).read_text()),
+            "registry": json.loads((root / P["data"]["registry"]).read_text()),
             "canaries": json.loads((FX / "canaries.json").read_text()),
             "panel": panel.load_panel(root / P["data"]["panel"]),
             "ws": root / P["agent"]["workspace"],
@@ -77,8 +78,8 @@ class ChatSession:
             raise PermissionError("message is not from the authenticated principal")
         self.turns += 1
         ctx, _ = self.context()
-        tools = standin.read_tools(self.session, self.audit, self.world["panel"],
-                                   self.world["mandates"], self.world["P"]["heartbeat"]["materiality"])
+        from services.mcp.tools import Toolbox                   # the Part 1 server's tools
+        tools = Toolbox(self.session, self.world, self.ws, ROOT / "outputs", self.audit).as_tools()
         model = model or standin.FixtureModel(          # offline stand-in until Part 2's real model
             [{"tool": "mandate_profile", "args": {"scope": self.mandate}, "rationale": "client positions"},
              {"tool": "bdc_signals", "args": {"scope": "public"}, "rationale": "what changed"}],

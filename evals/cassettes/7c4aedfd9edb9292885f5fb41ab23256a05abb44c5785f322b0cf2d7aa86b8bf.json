@@ -1,0 +1,1 @@
+{"content": [{"caller": {"type": "direct"}, "id": "toolu_011PuPZCnmkCvqpbseFkEQXa", "input": {"scope": "public"}, "name": "bdc_signals", "type": "tool_use"}], "model": "claude-sonnet-5-5", "stop_reason": "tool_use", "tokens_in": 2, "tokens_out": 49, "usd": 0.000494}
