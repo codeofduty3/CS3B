@@ -1,9 +1,15 @@
 {
   "suite": "dev",
-  "mode": "fixture",
+  "mode": "record",
   "tasks": 8,
-  "passed": 8,
-  "failed": [],
+  "passed": 3,
+  "failed": [
+    "dev-01",
+    "dev-02",
+    "dev-03",
+    "dev-04",
+    "dev-05"
+  ],
   "source": "data/fixture/tasks/dev.jsonl",
   "output": "outputs/tasks/dev.jsonl"
 }

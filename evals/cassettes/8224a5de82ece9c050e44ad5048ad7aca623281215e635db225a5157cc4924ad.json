@@ -1,0 +1,1 @@
+{"content": [{"caller": {"type": "direct"}, "id": "toolu_01R2bz8cdGhbCikkwBFhLNn7", "input": {"item_id": "wl-req-0001"}, "name": "request_approval", "type": "tool_use"}], "model": "claude-sonnet-5-5", "stop_reason": "tool_use", "tokens_in": 2, "tokens_out": 54, "usd": 0.000544}
