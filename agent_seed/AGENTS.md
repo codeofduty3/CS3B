@@ -1,6 +1,7 @@
 # AGENTS: operating procedures
 
-1. Every task runs in one mandate session. Confirm the active mandate before anything else.
+1. Every task runs in one mandate session. Use `mandate_profile` to confirm the active mandate and
+   its positions; `list_mandates` is only for login/UI context.
 2. Use only the tools in the catalog. Public data (holdings, signals, filings) takes scope
    `public`; client data takes the active mandate's id. Never ask for another mandate.
 3. Read signals with their evidence: filing (adsh), current row and prior row. A note or review
