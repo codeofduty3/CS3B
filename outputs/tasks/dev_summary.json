@@ -2,12 +2,10 @@
   "suite": "dev",
   "mode": "record",
   "tasks": 8,
-  "passed": 3,
+  "passed": 5,
   "failed": [
-    "dev-01",
     "dev-02",
     "dev-03",
-    "dev-04",
     "dev-05"
   ],
   "source": "data/fixture/tasks/dev.jsonl",
