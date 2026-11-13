@@ -1,0 +1,41 @@
+{
+  "release": {
+    "release": "2026_09",
+    "url": "https://www.sec.gov/files/datastandardsinnovation/data/business-development-company-bdc-data-sets/2026_09_bdc.zip",
+    "published": true
+  },
+  "route_counts": {
+    "mandate_a": 8,
+    "mandate_b": 4
+  },
+  "decision_counts": {
+    "mandate_a": 8,
+    "mandate_b": 4
+  },
+  "brief_paths": [
+    "outputs/heartbeat/briefs/mandate_a.md",
+    "outputs/heartbeat/briefs/mandate_b.md"
+  ],
+  "filings": 4,
+  "hygiene": {
+    "stale_watchlist": [
+      {
+        "mandate": "mandate_a",
+        "bdc": "FIXTURE GOLF CAPITAL CORP",
+        "added": "2026-07-14",
+        "age_days": 93
+      }
+    ],
+    "reporting_schedule": [
+      {
+        "mandate": "mandate_a",
+        "rule": "10th business day",
+        "due": "2026-11-13",
+        "within_window": false
+      }
+    ],
+    "upcoming_reporting": [],
+    "reporting_window_end": "2026-10-20",
+    "calendar_note": "Weekends excluded; public holidays are not modelled."
+  }
+}

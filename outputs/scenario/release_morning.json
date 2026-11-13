@@ -1,0 +1,231 @@
+{
+  "scenario": "release_morning",
+  "mode": "offline replay",
+  "clock": "2026-10-15T06:00:00-04:00",
+  "mandate": "mandate_a",
+  "release": "2026_09",
+  "published": true,
+  "held_alerts": [
+    {
+      "mandate": "mandate_a",
+      "key": "51226ca4ac0265d8",
+      "rule": "MARKDOWN",
+      "adsh": "0009000011-26-000111",
+      "row": "102",
+      "action": "hold"
+    },
+    {
+      "mandate": "mandate_a",
+      "key": "c41308f5be461ee4",
+      "rule": "MARKDOWN",
+      "adsh": "0009000011-26-000111",
+      "row": "106",
+      "action": "hold"
+    },
+    {
+      "mandate": "mandate_a",
+      "key": "b1ce7ce3af81b7e3",
+      "rule": "EXTENDED",
+      "adsh": "0009000012-26-000121",
+      "row": "105",
+      "action": "hold"
+    },
+    {
+      "mandate": "mandate_a",
+      "key": "5cb757a32754ed23",
+      "rule": "MARKDOWN",
+      "adsh": "0009000012-26-000121",
+      "row": "101",
+      "action": "hold"
+    },
+    {
+      "mandate": "mandate_a",
+      "key": "6031cc0702b56e96",
+      "rule": "PIK_UP",
+      "adsh": "0009000012-26-000121",
+      "row": "104",
+      "action": "hold"
+    },
+    {
+      "mandate": "mandate_a",
+      "key": "d06d14719543747a",
+      "rule": "EXTENDED",
+      "adsh": "0009000014-26-000141",
+      "row": "104",
+      "action": "hold"
+    },
+    {
+      "mandate": "mandate_a",
+      "key": "623b8430811efc5f",
+      "rule": "MARKDOWN",
+      "adsh": "0009000014-26-000141",
+      "row": "103",
+      "action": "hold"
+    },
+    {
+      "mandate": "mandate_a",
+      "key": "c014e64c72d75dd9",
+      "rule": "PIK_UP",
+      "adsh": "0009000014-26-000141",
+      "row": "106",
+      "action": "hold"
+    }
+  ],
+  "steps": [
+    {
+      "step": 1,
+      "name": "release_tick",
+      "release": "2026_09",
+      "url": "https://www.sec.gov/files/datastandardsinnovation/data/business-development-company-bdc-data-sets/2026_09_bdc.zip",
+      "published": true,
+      "actions": [
+        {
+          "mandate": "mandate_a",
+          "key": "51226ca4ac0265d8",
+          "rule": "MARKDOWN",
+          "adsh": "0009000011-26-000111",
+          "row": "102",
+          "action": "hold"
+        },
+        {
+          "mandate": "mandate_a",
+          "key": "c41308f5be461ee4",
+          "rule": "MARKDOWN",
+          "adsh": "0009000011-26-000111",
+          "row": "106",
+          "action": "hold"
+        },
+        {
+          "mandate": "mandate_a",
+          "key": "b1ce7ce3af81b7e3",
+          "rule": "EXTENDED",
+          "adsh": "0009000012-26-000121",
+          "row": "105",
+          "action": "hold"
+        },
+        {
+          "mandate": "mandate_a",
+          "key": "5cb757a32754ed23",
+          "rule": "MARKDOWN",
+          "adsh": "0009000012-26-000121",
+          "row": "101",
+          "action": "hold"
+        },
+        {
+          "mandate": "mandate_a",
+          "key": "6031cc0702b56e96",
+          "rule": "PIK_UP",
+          "adsh": "0009000012-26-000121",
+          "row": "104",
+          "action": "hold"
+        },
+        {
+          "mandate": "mandate_a",
+          "key": "d06d14719543747a",
+          "rule": "EXTENDED",
+          "adsh": "0009000014-26-000141",
+          "row": "104",
+          "action": "hold"
+        },
+        {
+          "mandate": "mandate_a",
+          "key": "623b8430811efc5f",
+          "rule": "MARKDOWN",
+          "adsh": "0009000014-26-000141",
+          "row": "103",
+          "action": "hold"
+        },
+        {
+          "mandate": "mandate_a",
+          "key": "c014e64c72d75dd9",
+          "rule": "PIK_UP",
+          "adsh": "0009000014-26-000141",
+          "row": "106",
+          "action": "hold"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "name": "brief_ready",
+      "time": "07:30",
+      "held_signal_count": 5,
+      "body": "Your exposure: Golf Capital Corp $42.0m, Hotel Senior Lending $18.0m, Juliett Lending Bdc $35.5m.\nHotel Senior Lending: EXTENDED 2029-09-30 to 2031-09-30; 0009000012-26-000121, row 105 (prior 505).\nHotel Senior Lending: MARKDOWN 99.0 to 93.5 (5.5 points); 0009000012-26-000121, row 101 (prior 501).\nHotel Senior Lending: PIK_UP 1.00% to 3.00%; 0009000012-26-000121, row 104 (prior 504).\nJuliett Lending Bdc: MARKDOWN 97.5 to 90.0 (7.5 points); 0009000014-26-000141, row 103 (prior 503).\nJuliett Lending Bdc: PIK_UP 0.00% to 2.50%; 0009000014-26-000141, row 106 (prior 506)."
+    },
+    {
+      "step": 3,
+      "name": "draft_email",
+      "draft_id": "draft-0001"
+    },
+    {
+      "step": 4,
+      "name": "approval_requested",
+      "item_id": "draft-0001",
+      "payload_hash": "b2f354f41b09157d1a6220a7ef27d307c29e415b3154997b4b62e651c3ba552b"
+    },
+    {
+      "step": 5,
+      "name": "send_email",
+      "outbox_message_id": "mock-0001",
+      "destination": "mock outbox only"
+    },
+    {
+      "step": 6,
+      "name": "watchlist_requested",
+      "request_id": "wl-req-0001",
+      "bdc": "FIXTURE HOTEL SENIOR LENDING"
+    },
+    {
+      "step": 7,
+      "name": "watchlist_written",
+      "entry_id": "wl-0002",
+      "bdc": "FIXTURE HOTEL SENIOR LENDING"
+    }
+  ],
+  "outbox_message_id": "mock-0001",
+  "watchlist_entry_id": "wl-0002",
+  "actions": [
+    {
+      "tool": "mandate_profile",
+      "action_class": "READ",
+      "args_hash": "b5e40423f722",
+      "decision": "executed"
+    },
+    {
+      "tool": "bdc_signals",
+      "action_class": "READ",
+      "args_hash": "7adee52be77e",
+      "decision": "executed"
+    },
+    {
+      "tool": "draft_email",
+      "action_class": "DRAFT",
+      "args_hash": "a10df6771344",
+      "decision": "executed"
+    },
+    {
+      "tool": "request_approval",
+      "action_class": "CONTROL",
+      "args_hash": "a5823bff2ebe",
+      "decision": "requested"
+    },
+    {
+      "tool": "send_email",
+      "action_class": "EXTERNAL_SEND",
+      "args_hash": "f6c799cd0060",
+      "decision": "executed"
+    },
+    {
+      "tool": "watchlist_write",
+      "action_class": "INTERNAL_WRITE",
+      "args_hash": "f87e6c09ffff",
+      "decision": "requested"
+    },
+    {
+      "tool": "watchlist_write",
+      "action_class": "INTERNAL_WRITE",
+      "args_hash": "f600c1057a8a",
+      "decision": "executed"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "skills": [
+    "bdc-quarter-review",
+    "client-monthly-note",
+    "ir-question",
+    "release-brief",
+    "signal-explainer",
+    "watchlist-entry"
+  ],
+  "count": 6,
+  "scripted": [
+    "bdc-quarter-review",
+    "release-brief"
+  ],
+  "index_chars": 1181,
+  "full_text_chars": 3963,
+  "index_saving_percent": 70.2,
+  "lock_verified": true
+}

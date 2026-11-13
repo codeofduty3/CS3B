@@ -1,0 +1,11 @@
+#!/bin/sh
+# Repository-root `lantern` entry point. Prefer the project environment.
+set -eu
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+cd "$ROOT"
+if [ -x "$ROOT/.venv/bin/python" ]; then
+    PYTHON="$ROOT/.venv/bin/python"
+else
+    PYTHON="${PYTHON:-python3}"
+fi
+PYTHONPATH="$ROOT:$ROOT/src${PYTHONPATH:+:$PYTHONPATH}" exec "$PYTHON" -m services.evals.cli "$@"

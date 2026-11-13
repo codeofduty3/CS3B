@@ -1,0 +1,9 @@
+{
+  "suite": "dev",
+  "mode": "replay",
+  "tasks": 8,
+  "passed": 8,
+  "failed": [],
+  "source": "data/fixture/tasks/dev.jsonl",
+  "output": "outputs/tasks/dev.jsonl"
+}

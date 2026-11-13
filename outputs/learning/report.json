@@ -1,0 +1,42 @@
+{
+  "mode": "offline replay",
+  "mandate": "mandate_a",
+  "corrections": [
+    {
+      "correction": "msg-101",
+      "before": false,
+      "after": true,
+      "earlier_rules_held": true,
+      "adhered": true
+    },
+    {
+      "correction": "msg-102",
+      "before": false,
+      "after": true,
+      "earlier_rules_held": true,
+      "adhered": true
+    },
+    {
+      "correction": "msg-103",
+      "before": false,
+      "after": true,
+      "earlier_rules_held": true,
+      "adhered": true
+    },
+    {
+      "correction": "msg-104",
+      "before": false,
+      "after": true,
+      "earlier_rules_held": true,
+      "adhered": true
+    }
+  ],
+  "adherence_after": 4,
+  "regressions": [],
+  "provenance": [
+    "msg-101",
+    "msg-102",
+    "msg-103",
+    "msg-104"
+  ]
+}

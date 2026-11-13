@@ -1,0 +1,71 @@
+{
+  "mode": "production estimate from configured model prices",
+  "releases_per_mandate_month": 1,
+  "note_steps": 6,
+  "assumptions": [
+    "One client note per mandate per monthly release.",
+    "Six main-model steps per completed note at 2,000 input and 300 output tokens per step.",
+    "One small-model materiality call per held signal at 600 input and 80 output tokens.",
+    "Manual review assumes 3 analyst hours per held BDC at $120 per hour.",
+    "Infrastructure, retries and human approval time are excluded from model cost."
+  ],
+  "mandates": [
+    {
+      "mandate": "mandate_a",
+      "held_bdcs": 3,
+      "material_signals": 8,
+      "estimated_model_cost_usd": 0.0428,
+      "estimated_cost_per_mandate_month_usd": 0.0428,
+      "analyst_review_value_usd": 1080.0,
+      "net_value_at_x1_usd": 1079.96,
+      "sensitivity": [
+        {
+          "scenario": "x0.5",
+          "hours": 4.5,
+          "usd": 540.0
+        },
+        {
+          "scenario": "x1",
+          "hours": 9.0,
+          "usd": 1080.0
+        },
+        {
+          "scenario": "x2",
+          "hours": 18.0,
+          "usd": 2160.0
+        }
+      ]
+    },
+    {
+      "mandate": "mandate_b",
+      "held_bdcs": 2,
+      "material_signals": 4,
+      "estimated_model_cost_usd": 0.0424,
+      "estimated_cost_per_mandate_month_usd": 0.0424,
+      "analyst_review_value_usd": 720.0,
+      "net_value_at_x1_usd": 719.96,
+      "sensitivity": [
+        {
+          "scenario": "x0.5",
+          "hours": 3.0,
+          "usd": 360.0
+        },
+        {
+          "scenario": "x1",
+          "hours": 6.0,
+          "usd": 720.0
+        },
+        {
+          "scenario": "x2",
+          "hours": 12.0,
+          "usd": 1440.0
+        }
+      ]
+    }
+  ],
+  "failure_cost": {
+    "privacy_response_hours": 8,
+    "privacy_response_cost_usd": 960.0,
+    "note": "Reputational and contractual effects are not priced; approvals and R-OTHER-MANDATE prevent the modeled incidence."
+  }
+}

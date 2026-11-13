@@ -34,6 +34,10 @@ Notebook 00 copies `agent_seed/` to `agent/`. Edit `agent/`, never the seed.
 python tests/run_tests.py                     # the kit's tests
 python tools/run_notebooks.py                 # every notebook, offline
 PYTHONPATH=src python -m creditwatch.check    # Case Study 3B self-check on your deliverables
+./lantern eval run --suite dev --mode replay  # graded task suite -> outputs/tasks/dev.jsonl
+./lantern scenario run                        # release morning, mock send, watchlist, economics
+PYTHONPATH=src python tools/run_heartbeat.py  # pairing, alerts, briefs, filings and metrics
+PYTHONPATH=src python tools/report_skills.py  # skill count, scripts, lock, context saving
 python tools/make_fixture.py --seed 7 --out /tmp/variant7    # a variant, to test your pairing
 ```
 
