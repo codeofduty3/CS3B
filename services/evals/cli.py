@@ -1,6 +1,9 @@
 """Command line for the Part 8 evaluator."""
 import argparse
 import json
+import sys
+
+from creditwatch import llm
 
 from .runner import run_suite
 from .scenario import build_economics, run_release_morning
@@ -13,7 +16,7 @@ def main(argv=None):
     actions = evaluation.add_subparsers(dest="action", required=True)
     run = actions.add_parser("run")
     run.add_argument("--suite", choices=["dev", "variant"], default="dev")
-    run.add_argument("--mode", choices=["replay"], default="replay")
+    run.add_argument("--mode", choices=["record", "replay", "fixture"], default="replay")
     run.add_argument("--output")
     scenario = commands.add_parser("scenario")
     scenario_actions = scenario.add_subparsers(dest="action", required=True)
@@ -22,8 +25,12 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     if args.command == "eval" and args.action == "run":
-        _, summary = run_suite(
-            suite=args.suite, mode=args.mode, output=args.output)
+        try:
+            _, summary = run_suite(
+                suite=args.suite, mode=args.mode, output=args.output)
+        except (RuntimeError, llm.CacheMiss) as error:
+            print(f"error: {error}", file=sys.stderr)
+            return 1
         print(json.dumps(summary, indent=2))
         return 0 if not summary["failed"] else 1
     if args.command == "scenario" and args.action == "run":

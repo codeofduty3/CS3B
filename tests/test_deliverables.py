@@ -50,7 +50,7 @@ def test_release_digest_is_deterministic_and_keeps_citations():
 def test_dev_suite_runs_through_the_tool_server_and_writes_appendix_g_records():
     with tempfile.TemporaryDirectory() as temp:
         output = Path(temp) / "dev.jsonl"
-        rows, summary = run_suite(ROOT, "dev", "replay", output)
+        rows, summary = run_suite(ROOT, "dev", "fixture", output)
         assert len(rows) == 8 and summary["passed"] == 8 and not summary["failed"]
         assert all(row["passed"] for row in rows)
         assert all(
