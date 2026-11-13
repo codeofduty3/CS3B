@@ -1,0 +1,1 @@
+{"content": [{"caller": {"type": "direct"}, "id": "toolu_012FtwUoKtREi5xTY1s925oB", "input": {"bdc": "FIXTURE JULIETT LENDING BDC", "scope": "public"}, "name": "bdc_signals", "type": "tool_use"}], "model": "claude-sonnet-5-5", "stop_reason": "tool_use", "tokens_in": 2, "tokens_out": 89, "usd": 0.000894}
