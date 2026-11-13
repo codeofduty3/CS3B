@@ -1,7 +1,4 @@
-"""Produce the Part 28 heartbeat artifacts from the recorded fixture.
-
-    PYTHONPATH=src:. python tools/run_heartbeat.py
-"""
+"""Produce Part 28 heartbeat and metric artifacts through Kahan's jobs."""
 import argparse
 import importlib.util
 import json
@@ -12,95 +9,64 @@ import pandas as pd
 import yaml
 
 from creditwatch import evals, panel, signals
-from services import heartbeat
+from services.heartbeat import brief_job, edgar_job, hygiene_job, release_job
 from services.signals.pairing import pair
 
 ROOT = Path(__file__).resolve().parents[1]
 MORNING = datetime.fromisoformat("2026-10-15T06:00:00-04:00")
 BRIEF_TIME = datetime.fromisoformat("2026-10-15T07:30:00-04:00")
-
-
-def _jsonl(path, rows):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in rows))
-
-
-def _scores(root, params, frame, truth):
-    found = signals.find_signals(frame, params["heartbeat"]["materiality"], pair=pair)
-    return evals.signal_scores(found, truth)
+EDGAR_TIME = datetime.fromisoformat("2026-10-15T09:30:00-04:00")
+HYGIENE_TIME = datetime.fromisoformat("2026-10-19T08:00:00-04:00")
 
 
 def _variant_scores(root):
-    module_path = Path(root) / "tools" / "make_fixture.py"
-    spec = importlib.util.spec_from_file_location("heartbeat_fixture_builder", module_path)
+    path = Path(root) / "tools" / "make_fixture.py"
+    spec = importlib.util.spec_from_file_location("heartbeat_fixture_builder", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     params = yaml.safe_load((Path(root) / "params.yaml").read_text())
-    out = []
-    pricing = params["heartbeat"]["materiality"]
+    materiality = params["heartbeat"]["materiality"]
+    rows = []
     for seed in (1, 2, 3):
-        rows, truth = module.build(seed)
-        frame = pd.DataFrame(rows)
+        generated, truth = module.build(seed)
+        frame = pd.DataFrame(generated)
         for column in panel.NUMERIC:
             if column in frame:
                 frame[column] = pd.to_numeric(frame[column], errors="coerce")
-        found = signals.find_signals(frame, pricing, pair=pair)
+        found = signals.find_signals(frame, materiality, pair=pair)
         score = evals.signal_scores(found, pd.DataFrame(truth).astype(str))
-        out.append({"variant": seed, **score})
-    return out
+        rows.append({"variant": seed, **score})
+    return rows
 
 
 def generate(root=ROOT, output_root=None):
     root = Path(root)
     output = Path(output_root or root / "outputs" / "heartbeat")
+    output.mkdir(parents=True, exist_ok=True)
+    for name in ("alerts.jsonl", "decisions.jsonl", "ticks.jsonl", "briefs.jsonl", "state.json"):
+        path = output / name
+        if path.exists():
+            path.unlink()
+
+    release = release_job(now=MORNING, root=root, out=output)
+    briefs = brief_job(now=BRIEF_TIME, root=root, out=output)
+    filings = edgar_job(now=EDGAR_TIME, root=root, out=output)
+    hygiene = hygiene_job(now=HYGIENE_TIME, root=root, out=output)
+
+    alerts_path = output / "alerts.jsonl"
+    alerts = [
+        json.loads(line) for line in alerts_path.read_text().splitlines()
+        if line.strip()
+    ] if alerts_path.exists() else []
+    release_alerts = [row for row in alerts if row.get("source") == "release_watch_dag"]
+
     params = yaml.safe_load((root / "params.yaml").read_text())
     fixture = root / params["data"]["fixture_dir"]
-    panel_data = panel.load_panel(root / params["data"]["panel"])
+    current_panel = panel.load_panel(root / params["data"]["panel"])
     truth = pd.read_csv(fixture / "ground_truth.csv", dtype=str)
+    found = signals.find_signals(current_panel, params["heartbeat"]["materiality"], pair=pair)
+    score = evals.signal_scores(found, truth)
     mandates = json.loads((root / params["data"]["mandates"]).read_text())
-
-    release = heartbeat.release_job(root, now=MORNING)
-    signal_rows = release["signals"]
-    alerts = []
-    for mandate, decisions in release["decisions"].items():
-        for decision in decisions:
-            event = next(
-                row for row in signal_rows
-                if row["adsh"] == decision["adsh"]
-                and str(row["row"]) == str(decision["row"])
-                and row["rule"] == decision["rule"])
-            alerts.append({
-                "alert_id": decision["key"],
-                "ts": BRIEF_TIME.isoformat(),
-                "mandate": mandate,
-                "bdc": event["name"],
-                "trigger": release["tick"]["release"],
-                "rule": event["rule"],
-                "text": (
-                    f"{event['rule']}: {event['identifier']} moved from "
-                    f"{event['before']} to {event['after']}."),
-                "citations": [
-                    f"{event['adsh']} current row {event['row']} "
-                    f"(prior row {event['prior_row']})"
-                ],
-                "delivery": "brief",
-            })
-    alerts.sort(key=lambda row: (row["mandate"], row["bdc"], row["rule"], row["alert_id"]))
-    _jsonl(output / "alerts.jsonl", alerts)
-
-    brief = heartbeat.monthly_brief_job(root, now=BRIEF_TIME)
-    (output / "briefs").mkdir(parents=True, exist_ok=True)
-    for mandate, text in brief["briefs"].items():
-        (output / "briefs" / f"{mandate}.md").write_text(text)
-
-    filings = heartbeat.edgar_job(root)
-    _jsonl(output / "filings.jsonl", filings["filings"])
-    hygiene = heartbeat.hygiene_job(root)
-
-    score = _scores(root, params, panel_data, truth)
-    pair_report = signals.pairing_report(panel_data, pair(panel_data))
-    variants = _variant_scores(root)
-    mandate_weeks = max(1, len(mandates))
     metrics = {
         "precision": score["precision"],
         "recall": score["recall"],
@@ -108,33 +74,24 @@ def generate(root=ROOT, output_root=None):
         "false_positives": score["fp"],
         "false_negatives": score["fn"],
         "by_rule": score["by_rule"],
-        "variants": variants,
-        "pairing": pair_report.to_dict("records"),
+        "variants": _variant_scores(root),
+        "pairing": signals.pairing_report(current_panel, pair(current_panel)).to_dict("records"),
         "alerts_total": len(alerts),
-        "alerts_per_mandate_week": len(alerts) / mandate_weeks,
-        "release_to_brief_minutes": int(
-            (BRIEF_TIME - MORNING).total_seconds() / 60),
+        "release_alerts": len(release_alerts),
+        "alerts_per_mandate_week": len(release_alerts) / max(1, len(mandates)),
+        "release_to_brief_minutes": int((BRIEF_TIME - MORNING).total_seconds() / 60),
         "idle_cost_usd_per_head_check": 0.0,
-        "idle_cost_note": (
-            "Release detection is an HTTP HEAD request. "
-            "No model calls occur when no release is published."),
+        "idle_cost_note": "No model calls occur on the heartbeat path.",
     }
     (output / "metrics.json").write_text(json.dumps(metrics, indent=2) + "\n")
-    run = {
-        "release": release["tick"],
-        "route_counts": release["route_counts"],
-        "decision_counts": {
-            mandate: len(decisions)
-            for mandate, decisions in release["decisions"].items()
-        },
-        "brief_paths": [
-            f"outputs/heartbeat/briefs/{mandate}.md" for mandate in sorted(mandates)
-        ],
-        "filings": len(filings["filings"]),
+    summary = {
+        "release": release,
+        "briefs": briefs,
+        "filings": filings,
         "hygiene": hygiene,
     }
-    (output / "run.json").write_text(json.dumps(run, indent=2) + "\n")
-    return {"alerts": alerts, "metrics": metrics, "run": run}
+    (output / "run.json").write_text(json.dumps(summary, indent=2) + "\n")
+    return {"alerts": alerts, "metrics": metrics, "run": summary}
 
 
 def main(argv=None):

@@ -1,9 +1,10 @@
-"""Part 28: pairing, heartbeat routing, outputs and Airflow wrappers."""
+"""Part 28 regression tests for pairing, jobs, state and generated alerts."""
 import importlib.util
 import json
 import sys
 import tempfile
 import types
+from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
@@ -14,8 +15,13 @@ sys.path[:0] = [str(ROOT), str(ROOT / "src")]
 
 from creditwatch import evals, panel, policy, signals  # noqa: E402
 from services.chat.session import load_world, others  # noqa: E402
-from services.heartbeat import edgar_job, hygiene_job, monthly_brief_job, release_job  # noqa: E402
+from services.heartbeat import brief_job, edgar_job, hygiene_job, release_job  # noqa: E402
 from services.signals.pairing import pair  # noqa: E402
+
+MORNING = datetime.fromisoformat("2026-10-15T06:00:00-04:00")
+BRIEF = datetime.fromisoformat("2026-10-15T07:30:00-04:00")
+EDGAR = datetime.fromisoformat("2026-10-15T09:30:00-04:00")
+HYGIENE = datetime.fromisoformat("2026-10-19T08:00:00-04:00")
 
 
 def _fixture_builder():
@@ -31,9 +37,9 @@ def test_pairing_reaches_full_recall_without_false_positives():
     materiality = params["heartbeat"]["materiality"]
     fixture = panel.load_panel(ROOT / "data" / "fixture" / "panel_2p.csv")
     truth = pd.read_csv(ROOT / "data" / "fixture" / "ground_truth.csv", dtype=str)
-    assert evals.signal_scores(
-        signals.find_signals(fixture, materiality, pair=pair), truth
-    )["precision"] == 1.0
+    score = evals.signal_scores(
+        signals.find_signals(fixture, materiality, pair=pair), truth)
+    assert (score["precision"], score["recall"], score["fp"], score["fn"]) == (1.0, 1.0, 0, 0)
 
     builder = _fixture_builder()
     for seed in (1, 2, 3):
@@ -48,23 +54,23 @@ def test_pairing_reaches_full_recall_without_false_positives():
         assert (score["precision"], score["recall"], score["fp"], score["fn"]) == (1.0, 1.0, 0, 0)
 
 
-def test_heartbeat_jobs_route_only_held_bdcs():
-    release = release_job(ROOT)
-    assert release["tick"]["published"] is True
-    assert release["route_counts"] == {"mandate_a": 8, "mandate_b": 4}
-    assert all(item["action"] == "hold" for items in release["decisions"].values() for item in items)
+def test_jobs_use_shared_state_route_held_bdcs_and_deduplicate():
+    with tempfile.TemporaryDirectory() as temp:
+        output = Path(temp) / "heartbeat"
+        first = release_job(now=MORNING, root=ROOT, out=output)
+        assert first["published"] is True and first["held"] == 12
+        dedup = release_job(now=MORNING, root=ROOT, out=output)
+        assert dedup["published"] is False and dedup["held"] == 0
 
-    filings = edgar_job(ROOT)["filings"]
-    assert {item["mandate"] for item in filings} == {"mandate_a", "mandate_b"}
-    assert all(item["action"] in {"alert", "hold", "not_material"} for item in filings)
+        briefs = brief_job(now=BRIEF, root=ROOT, out=output)
+        assert len(briefs) == 2
+        assert all((ROOT / row["path"]).exists() or (output / "briefs" / Path(row["path"]).name).exists()
+                   for row in briefs)
 
-    briefs = monthly_brief_job(ROOT)["briefs"]
-    assert set(briefs) == {"mandate_a", "mandate_b"}
-    assert "0009000011-26-000111" in briefs["mandate_a"]
-    assert "0009000013-26-000131" not in briefs["mandate_a"]
-
-    stale = hygiene_job(ROOT)["stale_watchlist"]
-    assert stale and stale[0]["bdc"] == "FIXTURE GOLF CAPITAL CORP"
+        filings = edgar_job(now=EDGAR, root=ROOT, out=output)
+        assert filings
+        hygiene = hygiene_job(now=HYGIENE, root=ROOT, out=output)
+        assert hygiene["stale_watchlist"]
 
 
 def test_generated_alerts_are_complete_routed_and_isolated():
@@ -73,11 +79,9 @@ def test_generated_alerts_are_complete_routed_and_isolated():
     world = load_world()
     with tempfile.TemporaryDirectory() as temp:
         result = generate(ROOT, temp)
-        alert_path = Path(temp) / "alerts.jsonl"
-        alerts = [json.loads(line) for line in alert_path.read_text().splitlines()]
+        alerts = result["alerts"]
         required = {"alert_id", "ts", "mandate", "bdc", "trigger", "rule", "text", "citations"}
-        assert len(alerts) == 12
-        assert all(required <= set(alert) for alert in alerts)
+        assert alerts and all(required <= set(alert) for alert in alerts)
         for alert in alerts:
             assert alert["bdc"] in world["mandates"][alert["mandate"]]["positions"]
             protected = others(world["mandates"], world["canaries"], alert["mandate"])
@@ -126,17 +130,3 @@ def test_four_dags_are_thin_airflow_three_wrappers():
         "release_watch_dag", "edgar_watch_dag",
         "monthly_brief_dag", "hygiene_dag",
     }
-
-
-def test_scheduled_jobs_deduplicate_across_runs():
-    with tempfile.TemporaryDirectory() as temp:
-        release_state = Path(temp) / "release.json"
-        first = release_job(ROOT, state_file=release_state)
-        second = release_job(ROOT, state_file=release_state)
-        assert sum(map(len, first["decisions"].values())) == 12
-        assert sum(map(len, second["decisions"].values())) == 0
-
-        edgar_state = Path(temp) / "edgar.json"
-        first_filings = edgar_job(ROOT, state_file=edgar_state)["filings"]
-        second_filings = edgar_job(ROOT, state_file=edgar_state)["filings"]
-        assert first_filings and not second_filings

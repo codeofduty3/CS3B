@@ -2,40 +2,65 @@
   "release": {
     "release": "2026_09",
     "url": "https://www.sec.gov/files/datastandardsinnovation/data/business-development-company-bdc-data-sets/2026_09_bdc.zip",
-    "published": true
+    "published": true,
+    "alerts": 0,
+    "held": 12
   },
-  "route_counts": {
-    "mandate_a": 8,
-    "mandate_b": 4
-  },
-  "decision_counts": {
-    "mandate_a": 8,
-    "mandate_b": 4
-  },
-  "brief_paths": [
-    "outputs/heartbeat/briefs/mandate_a.md",
-    "outputs/heartbeat/briefs/mandate_b.md"
+  "briefs": [
+    {
+      "brief_id": "br-2026-10-15-mandate_a",
+      "ts": "2026-10-15T07:30:00-04:00",
+      "mandate": "mandate_a",
+      "to": "priya",
+      "release": "2026_09",
+      "path": "outputs/heartbeat/briefs/2026-10-15_mandate_a.md",
+      "alert_ids": [
+        "al-51226ca4ac0265d8",
+        "al-c41308f5be461ee4",
+        "al-b1ce7ce3af81b7e3",
+        "al-5cb757a32754ed23",
+        "al-6031cc0702b56e96",
+        "al-d06d14719543747a",
+        "al-623b8430811efc5f",
+        "al-c014e64c72d75dd9"
+      ]
+    },
+    {
+      "brief_id": "br-2026-10-15-mandate_b",
+      "ts": "2026-10-15T07:30:00-04:00",
+      "mandate": "mandate_b",
+      "to": "priya",
+      "release": "2026_09",
+      "path": "outputs/heartbeat/briefs/2026-10-15_mandate_b.md",
+      "alert_ids": [
+        "al-5f15e5a8ce4d5da3",
+        "al-25a3fb00e511d204",
+        "al-bb0e05fc05e6f1a3",
+        "al-851b2768517ba389"
+      ]
+    }
   ],
-  "filings": 4,
+  "filings": {
+    "alert": 4,
+    "not_material": 4
+  },
   "hygiene": {
+    "ts": "2026-10-19T08:00:00-04:00",
     "stale_watchlist": [
       {
         "mandate": "mandate_a",
         "bdc": "FIXTURE GOLF CAPITAL CORP",
-        "added": "2026-07-14",
-        "age_days": 93
+        "reason": "PIK share rising for two quarters",
+        "last_reviewed": "2026-07-14",
+        "days": 97
       }
     ],
-    "reporting_schedule": [
+    "reporting_due": [],
+    "undated_reporting": [
       {
-        "mandate": "mandate_a",
-        "rule": "10th business day",
-        "due": "2026-11-13",
-        "within_window": false
+        "mandate": "mandate_b",
+        "what": "Quarterly letter; ad hoc questions by email."
       }
-    ],
-    "upcoming_reporting": [],
-    "reporting_window_end": "2026-10-20",
-    "calendar_note": "Weekends excluded; public holidays are not modelled."
+    ]
   }
 }

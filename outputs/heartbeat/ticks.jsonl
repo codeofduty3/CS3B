@@ -1,0 +1,4 @@
+{"found": 12, "hold": 12, "job": "release_watch", "model_tokens": 0, "published": true, "release": "2026_09", "requests": 1, "seconds": 0.0539, "ts": "2026-10-15T06:00:00-04:00"}
+{"briefs": 2, "found": 12, "job": "monthly_brief", "model_tokens": 0, "requests": 0, "seconds": 0.1169, "ts": "2026-10-15T07:30:00-04:00"}
+{"alert": 4, "found": 8, "job": "edgar_watch", "model_tokens": 0, "not_material": 4, "requests": 4, "seconds": 0.0051, "ts": "2026-10-15T09:30:00-04:00"}
+{"found": 1, "job": "hygiene", "model_tokens": 0, "requests": 0, "seconds": 0.0049, "ts": "2026-10-19T08:00:00-04:00"}

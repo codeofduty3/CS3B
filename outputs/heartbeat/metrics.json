@@ -128,9 +128,10 @@
       "unpaired": 0
     }
   ],
-  "alerts_total": 12,
+  "alerts_total": 16,
+  "release_alerts": 12,
   "alerts_per_mandate_week": 6.0,
   "release_to_brief_minutes": 90,
   "idle_cost_usd_per_head_check": 0.0,
-  "idle_cost_note": "Release detection is an HTTP HEAD request. No model calls occur when no release is published."
+  "idle_cost_note": "No model calls occur on the heartbeat path."
 }

@@ -1,0 +1,19 @@
+{
+ "ts": "2026-10-19T08:00:00-04:00",
+ "stale_watchlist": [
+  {
+   "mandate": "mandate_a",
+   "bdc": "FIXTURE GOLF CAPITAL CORP",
+   "reason": "PIK share rising for two quarters",
+   "last_reviewed": "2026-07-14",
+   "days": 97
+  }
+ ],
+ "reporting_due": [],
+ "undated_reporting": [
+  {
+   "mandate": "mandate_b",
+   "what": "Quarterly letter; ad hoc questions by email."
+  }
+ ]
+}
