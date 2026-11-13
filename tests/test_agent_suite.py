@@ -122,9 +122,7 @@ def test_model_task_records_once_and_replays_identically_without_calls():
         first = run_agent_task(task, replay_client, world=WORLD)
         second = run_agent_task(task, replay_client, world=WORLD)
         assert provider.calls == calls
-        assert first["actions"] == second["actions"] == record["actions"]
-        assert json.dumps(first["trace"], sort_keys=True) == json.dumps(
-            second["trace"], sort_keys=True)
+        assert first == second == record
 
 
 def test_approval_is_injected_by_harness_and_replay_is_exact():

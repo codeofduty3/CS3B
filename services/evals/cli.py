@@ -18,6 +18,8 @@ def main(argv=None):
     run.add_argument("--suite", choices=["dev", "variant"], default="dev")
     run.add_argument("--mode", choices=["record", "replay", "fixture"], default="replay")
     run.add_argument("--output")
+    run.add_argument("--task", action="append", dest="task_ids",
+                     help="run only this task; repeat for multiple tasks")
     scenario = commands.add_parser("scenario")
     scenario_actions = scenario.add_subparsers(dest="action", required=True)
     scenario_run = scenario_actions.add_parser("run")
@@ -27,7 +29,8 @@ def main(argv=None):
     if args.command == "eval" and args.action == "run":
         try:
             _, summary = run_suite(
-                suite=args.suite, mode=args.mode, output=args.output)
+                suite=args.suite, mode=args.mode, output=args.output,
+                task_ids=args.task_ids)
         except (RuntimeError, llm.CacheMiss) as error:
             print(f"error: {error}", file=sys.stderr)
             return 1

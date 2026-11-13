@@ -247,6 +247,16 @@ def _quoted_referenced_messages(task, root):
         + "\n".join(json.dumps(row, sort_keys=True) for row in found))
 
 
+def _safe_final(text, mandate, world):
+    """Stop protected names or canaries from crossing the response boundary."""
+    protected = others(world["mandates"], world["canaries"], mandate)
+    if policy.mentions(text, protected["names"]) or policy.leaks(text, protected["terms"]):
+        return (
+            "I cannot share another client's information. "
+            "I can discuss this mandate's holdings and watchlist.")
+    return text
+
+
 def run_agent_task(task, client, root=ROOT, world=None, run_id=None):
     """Run one task on the real model path using the completed team workspace."""
     root = Path(root)
@@ -282,15 +292,15 @@ def run_agent_task(task, client, root=ROOT, world=None, run_id=None):
             usd_cap=budget["usd_cap_per_task"],
             token_cap=budget["token_cap_per_task"],
             run_id=run_id)
+        final_text = (
+            text if text is not None
+            else f"(stopped: {trace[-1].get('stop')})")
         record = {
             "task_id": task["task_id"],
             "mandate": mandate,
             "run_id": run_id,
-            "final_response": (
-                text if text is not None
-                else f"(stopped: {trace[-1].get('stop')})"),
+            "final_response": _safe_final(final_text, mandate, world),
             "actions": list(tb.actions),
-            "trace": trace,
             "usage": {
                 "mode": None,
                 "provider_calls": None,
@@ -300,7 +310,7 @@ def run_agent_task(task, client, root=ROOT, world=None, run_id=None):
     return _assess(task, record, world)
 
 
-def run_suite(root=ROOT, suite="dev", mode="replay", output=None):
+def run_suite(root=ROOT, suite="dev", mode="replay", output=None, task_ids=None):
     if mode not in {"record", "replay", "fixture"}:
         raise ValueError("mode must be record, replay or fixture")
     root = Path(root)
@@ -309,6 +319,13 @@ def run_suite(root=ROOT, suite="dev", mode="replay", output=None):
         root / "data" / "fixture" / "tasks" / "dev.jsonl"
         if suite == "dev" else root / "evals" / "tasks" / "variant.jsonl")
     tasks = _jsonl(prompts)
+    if task_ids:
+        wanted = set(task_ids)
+        known = {task["task_id"] for task in tasks}
+        missing = sorted(wanted - known)
+        if missing:
+            raise ValueError(f"unknown task(s): {', '.join(missing)}")
+        tasks = [task for task in tasks if task["task_id"] in wanted]
     if mode == "fixture":
         rows = [_execute_fixture_task(task, root, world) for task in tasks]
     else:
@@ -328,12 +345,14 @@ def run_suite(root=ROOT, suite="dev", mode="replay", output=None):
             row["usage"]["mode"] = mode
             row["usage"]["provider_calls"] = 0 if mode == "replay" else None
             rows.append(row)
-    output = Path(output or root / "outputs" / "tasks" / f"{suite}.jsonl")
+    name = f"{suite}.jsonl" if not task_ids else f"{suite}_selected.jsonl"
+    output = Path(output or root / "outputs" / "tasks" / name)
     _write_jsonl(output, rows)
     summary = {
         "suite": suite,
         "mode": mode,
         "tasks": len(rows),
+        "task_ids": [row["task_id"] for row in rows],
         "passed": sum(row["passed"] for row in rows),
         "failed": [row["task_id"] for row in rows if not row["passed"]],
         "source": str(prompts.relative_to(root)),

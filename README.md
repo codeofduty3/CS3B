@@ -37,6 +37,7 @@ PYTHONPATH=src python -m creditwatch.check    # Case Study 3B self-check on your
 ./lantern eval run --suite dev --mode fixture # deterministic suite while recordings are pending
 ./lantern eval run --suite dev --mode record  # call the provider and write exact-response cassettes
 ./lantern eval run --suite dev --mode replay  # free, offline model replay
+./lantern eval run --suite dev --mode record --task dev-03 --task dev-05
 ./lantern scenario run                        # release morning, mock send, watchlist, economics
 PYTHONPATH=src python tools/run_heartbeat.py  # pairing, alerts, briefs, filings and metrics
 PYTHONPATH=src python tools/report_skills.py  # skill count, scripts, lock, context saving
