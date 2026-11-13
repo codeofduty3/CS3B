@@ -1,0 +1,1 @@
+{"content": [{"caller": {"type": "direct"}, "id": "toolu_018odMStndF2JioXUiSMB6SJ", "input": {"query": "approved note CIO draft approval token", "scope": "mandate_a"}, "name": "memory_read", "type": "tool_use"}], "model": "claude-sonnet-5-5", "stop_reason": "tool_use", "tokens_in": 2, "tokens_out": 82, "usd": 0.000824}

@@ -34,8 +34,31 @@ Notebook 00 copies `agent_seed/` to `agent/`. Edit `agent/`, never the seed.
 python tests/run_tests.py                     # the kit's tests
 python tools/run_notebooks.py                 # every notebook, offline
 PYTHONPATH=src python -m creditwatch.check    # Case Study 3B self-check on your deliverables
+./lantern eval run --suite dev --mode fixture # deterministic suite while recordings are pending
+./lantern eval run --suite dev --mode record  # call the provider and write exact-response cassettes
+./lantern eval run --suite dev --mode replay  # free, offline model replay
+./lantern eval run --suite dev --mode record --task dev-03 --task dev-05
+./lantern scenario run                        # release morning, mock send, watchlist, economics
+PYTHONPATH=src python tools/run_heartbeat.py  # pairing, alerts, briefs, filings and metrics
+PYTHONPATH=src python tools/report_skills.py  # skill count, scripts, lock, context saving
 python tools/make_fixture.py --seed 7 --out /tmp/variant7    # a variant, to test your pairing
 ```
+
+## Recording the model-backed task suite
+
+Install the provider SDK and authenticate before recording:
+
+```bash
+pip install -r requirements.txt
+export ANTHROPIC_API_KEY='...'
+./lantern eval run --suite dev --mode record
+./lantern eval run --suite dev --mode replay
+```
+
+Each unique model request is stored under `evals/cassettes/`. Changing the
+agent workspace, `params.yaml`, prompts, tool schemas or model settings
+changes the request key and requires new recordings. Replay performs no
+provider calls and raises `CacheMiss` rather than silently falling back.
 
 ## Switching to your real panel (Case Study 3B, Section 4)
 1. Export both schedules of every admitted filing from your Case Study 2B work:

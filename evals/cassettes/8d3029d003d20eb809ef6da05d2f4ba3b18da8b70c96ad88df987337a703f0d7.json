@@ -1,0 +1,1 @@
+{"content": [{"caller": {"type": "direct"}, "id": "toolu_015jW2a4pTVyxYaLTYzQ2tV6", "input": {"scope": "mandate_b"}, "name": "mandate_profile", "type": "tool_use"}], "model": "claude-sonnet-5-5", "stop_reason": "tool_use", "tokens_in": 4, "tokens_out": 53, "usd": 0.000538}

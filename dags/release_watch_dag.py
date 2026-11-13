@@ -14,7 +14,7 @@ from airflow.sdk import dag, task
 def release_watch():
     @task
     def tick():
-        from services.heartbeat import release_job   # your code: all logic lives there
+        from services.heartbeat import release_job
         return release_job()
 
     tick()

@@ -1,0 +1,1 @@
+{"content": [{"caller": {"type": "direct"}, "id": "toolu_01XTde3TJJs9e8k1N2oVnrfB", "input": {"query": "m-001", "scope": "mandate_a"}, "name": "memory_read", "type": "tool_use"}], "model": "claude-sonnet-5-5", "stop_reason": "tool_use", "tokens_in": 2, "tokens_out": 74, "usd": 0.000744}
