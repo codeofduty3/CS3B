@@ -6,6 +6,7 @@ data:
   fixture_dir: data/fixture
   mandates: data/fixture/mandates.json     # real mode: copy and point positions at BDCs in your panel
   registry: data/fixture/registry.json
+  real_panel: data/real/panel_2p.parquet   # our CS2B two-period panel (from_holdings); notebook 28 hand-checks pairs on it
 agent:
   seed: agent_seed                         # copied to agent/ by notebook 00; edit agent/, never the seed
   workspace: agent
